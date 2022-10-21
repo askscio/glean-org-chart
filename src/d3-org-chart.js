@@ -40,6 +40,7 @@ export class OrgChart {
             compact: true,
             rootMargin: 40,
             nodeDefaultBackground: 'none',
+            hiddenNodeIds: new Set(),
             connections: [],
             lastTransform: { x: 0, y: 0, k: 1 },
             nodeId: d => d.nodeId || d.id,
@@ -72,6 +73,10 @@ export class OrgChart {
                     .attr("marker-end", d => `url(#arrow-${d.from + "_" + d.to})`)
             },
             linkUpdate: function (d, i, arr) {
+                if (attrs.hiddenNodeIds.has(d.data.parentId)) {
+                    d3.select(this).attr('display', 'none')
+                    return 
+                }
                 d3.select(this)
                     .attr('stroke', d => d.data._upToTheRootHighlighted ? attrs.highlightedLinkColor : attrs.linkColor)
                     .attr('stroke-width', d => d.data._upToTheRootHighlighted ? '2' : '1')
