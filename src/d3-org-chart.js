@@ -22,6 +22,7 @@ export class OrgChart {
     constructor() {
         // Exposed variables 
         const attrs = {
+            addedNodeIds: new Set(),
             id: `ID${Math.floor(Math.random() * 1000000)}`, // Id for event handlings
             firstDraw: true,
             svgWidth: 800,
@@ -353,6 +354,10 @@ export class OrgChart {
             return this;
         }
 
+        if (attrs.addedNodeIds.size < attrs.data.length) {
+            attrs.data.forEach((d) => attrs.addedNodeIds.add(attrs.nodeId(d)))
+        }
+
         //Drawing containers
         const container = d3.select(attrs.container);
         const containerRect = container.node().getBoundingClientRect();
@@ -495,8 +500,10 @@ export class OrgChart {
     // This function can be invoked via chart.addNode API, and it adds node in tree at runtime
     addNode(obj) {
         const attrs = this.getChartState();
-        const nodeFound = attrs.allNodes.filter(({ data }) => attrs.nodeId(data) === attrs.nodeId(obj))[0];
-        const parentFound = attrs.allNodes.filter(({ data }) => attrs.nodeId(data) === attrs.parentNodeId(obj))[0];
+
+        const nodeFound = attrs.addedNodeIds.has(attrs.nodeId(obj))
+        const parentFound = attrs.addedNodeIds.has(attrs.parentNodeId(obj))
+
         if (nodeFound) {
             console.log(`ORG CHART - ADD - Node with id "${attrs.nodeId(obj)}" already exists in tree`)
             return this;
@@ -511,6 +518,37 @@ export class OrgChart {
         // Update state of nodes and redraw graph
         this.updateNodesState();
 
+        attrs.addedNodeIds.add(attrs.nodeId(obj))
+
+        return this;
+    }
+
+    bulkAddNodes(nodes) {
+        const attrs = this.getChartState();
+
+        for (const node of nodes) {
+            const nodeExists = attrs.addedNodeIds.has(attrs.nodeId(node));
+            const parentNodeExists = attrs.addedNodeIds.has(attrs.parentNodeId(node));
+
+            if (nodeExists) {
+                console.log(`ORG CHART - ADD - Node with id "${attrs.nodeId(node)}" already exists in tree`)
+                continue
+            }
+            if (!parentNodeExists) {
+                console.log(`ORG CHART - ADD - Parent node with id "${attrs.parentNodeId(node)}" not found in the tree`)
+                continue
+            }
+
+
+            if (node._centered && !node._expanded) {
+                node._expanded = true;
+            }
+
+            attrs.data.push(node);
+            attrs.addedNodeIds.add(attrs.nodeId(node));
+        }
+
+        this.updateNodesState();
         return this;
     }
 
