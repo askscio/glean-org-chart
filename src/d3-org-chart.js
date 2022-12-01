@@ -523,7 +523,7 @@ export class OrgChart {
         return this;
     }
 
-    bulkAddNodes(nodes) {
+    addNodes(nodes) {
         const attrs = this.getChartState();
 
         for (const node of nodes) {
