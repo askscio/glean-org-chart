@@ -553,7 +553,7 @@ export class OrgChart {
     }
 
     // Recursively closes the siblings of the provided node and its ancestors.
-    closeSiblingNodes(node) {
+    closeNonReportingLineNodes(node) {
         const attrs = this.getChartState();
         const nodeFound = attrs.addedNodeIds.has(attrs.nodeId(node));
 
@@ -567,7 +567,7 @@ export class OrgChart {
             if (attrs.nodeId(child) === attrs.nodeId(node)) continue
             this.setExpansionFlagToChildren(child, false);
         }
-        this.closeSiblingNodes(parent);
+        this.closeNonReportingLineNodes(parent);
         this.updateNodesState()
     }
 
