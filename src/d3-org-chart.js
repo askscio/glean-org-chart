@@ -552,6 +552,25 @@ export class OrgChart {
         return this;
     }
 
+    // Recursively closes the siblings of the provided node and its ancestors.
+    closeNonReportingLineNodes(node) {
+        const attrs = this.getChartState();
+        const nodeFound = attrs.addedNodeIds.has(attrs.nodeId(node));
+
+        if (!nodeFound) return
+
+        const { parent } = node;
+
+        if (!parent.children) return
+    
+        for (const child of parent.children) {
+            if (attrs.nodeId(child) === attrs.nodeId(node)) continue
+            this.setExpansionFlagToChildren(child, false);
+        }
+        this.closeNonReportingLineNodes(parent);
+        this.updateNodesState()
+    }
+
     // This function can be invoked via chart.removeNode API, and it removes node from tree at runtime
     removeNode(nodeId) {
         const attrs = this.getChartState();
