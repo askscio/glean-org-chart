@@ -354,9 +354,8 @@ export class OrgChart {
             return this;
         }
 
-        if (attrs.addedNodeIds.size < attrs.data.length) {
-            attrs.data.forEach((d) => attrs.addedNodeIds.add(attrs.nodeId(d)))
-        }
+        attrs.addedNodeIds.clear();
+        attrs.data.forEach((d) => attrs.addedNodeIds.add(attrs.nodeId(d)))
 
         //Drawing containers
         const container = d3.select(attrs.container);
