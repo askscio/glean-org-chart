@@ -76,7 +76,7 @@ export class OrgChart {
             linkUpdate: function (d, i, arr) {
                 if (attrs.hiddenNodeIds.has(d.data.parentId)) {
                     d3.select(this).attr('display', 'none')
-                    return 
+                    return
                 }
                 d3.select(this)
                     .attr('stroke', d => d.data._upToTheRootHighlighted ? attrs.highlightedLinkColor : attrs.linkColor)
@@ -560,8 +560,8 @@ export class OrgChart {
 
         const { parent } = node;
 
-        if (!parent.children) return
-    
+        if (!parent?.children) return
+
         for (const child of parent.children) {
             if (attrs.nodeId(child) === attrs.nodeId(node)) continue
             this.setExpansionFlagToChildren(child, false);
